@@ -72,7 +72,7 @@ public class ProjectConfig implements WebMvcConfigurer {
         registro.addInterceptor(localeChangeInterceptor());
     }
     
-    //
+   /* El siguiente método se utilizar para publicar en la nube, independientemente  */
     @Bean("messageSource")
     public MessageSource messageSource(){
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
