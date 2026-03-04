@@ -1,10 +1,8 @@
 package com.tienda;
 
 import java.util.Locale;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -26,20 +24,29 @@ public class ProjectConfig implements WebMvcConfigurer {
         registry.addViewController("/iframes").setViewName("iframes");
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/registro/nuevo").setViewName("/registro/nuevo");
-        registry.addViewController("/categoria/listado").setViewName("categoria/listado");
-        registry.addViewController("/producto/listado").setViewName("producto/listado");
-
-        registry.addViewController("/pruebas/listado").setViewName("pruebas/listado");
-        registry.addViewController("/pruebas/listado2").setViewName("pruebas/listado2");
-
-        registry.addViewController("/usuario/listado").setViewName("usuario/listado");
-        registry.addViewController("/role/listado").setViewName("role/listado");
-        registry.addViewController("/usuario_role/asignar").setViewName("usuario_role/asignar");
-        registry.addViewController("/ruta/listado").setViewName("ruta/listado");
-        registry.addViewController("/constante/listado").setViewName("constante/listado");
     }
 
-    /* El siguiente método se utilizar para publicar en la nube, independientemente */
+    /* Configuración de internacionalización (i18n) */
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver slr = new SessionLocaleResolver();
+        slr.setDefaultLocale(Locale.of("es"));
+        return slr;
+    }
+
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+        lci.setParamName("lang");
+        return lci;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+    }
+
+    /* El siguiente método se utilizar para publicar en la nube, independientemente  */
     @Bean
     public SpringResourceTemplateResolver templateResolver_0() {
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
@@ -49,35 +56,5 @@ public class ProjectConfig implements WebMvcConfigurer {
         resolver.setOrder(0);
         resolver.setCheckExistence(true);
         return resolver;
-    }
-
-    @Bean
-    public LocaleResolver localeResolver() {
-        var slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.getDefault());
-        slr.setLocaleAttributeName("session.current.locale");
-        slr.setTimeZoneAttributeName("session.current.timezone");
-        return slr;
-    }
-    
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor(){
-        var lci = new LocaleChangeInterceptor();
-        lci.setParamName("lang");
-        return lci;
-    }
-    
-    @Override
-    public void addInterceptors(InterceptorRegistry registro){
-        registro.addInterceptor(localeChangeInterceptor());
-    }
-    
-   /* El siguiente método se utilizar para publicar en la nube, independientemente  */
-    @Bean("messageSource")
-    public MessageSource messageSource(){
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
     }
 }
