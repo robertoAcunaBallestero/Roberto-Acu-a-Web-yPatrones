@@ -1,5 +1,4 @@
 package com.tienda.controller;
-
 import com.tienda.domain.Producto;
 import com.tienda.service.CategoriaService;
 import com.tienda.service.ProductoService;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/producto")
 public class ProductoController {
-
     private final ProductoService productoService;
     private final CategoriaService categoriaService;
     private final MessageSource messageSource;
@@ -31,8 +29,6 @@ public class ProductoController {
         this.messageSource = messageSource;
     }
 
-    
-
     @GetMapping("/listado")
     public String listado(Model model) {
         var productos = productoService.getProductos(false);
@@ -40,15 +36,13 @@ public class ProductoController {
         var categorias = categoriaService.getCategorias(true);
         model.addAttribute("categorias", categorias);
         model.addAttribute("totalProductos", productos.size());
-        return "/producto/listado";
+        return "producto/listado"; // ✅ Corregido: sin barra inicial
     }
 
     @PostMapping("/guardar")
     public String guardar(@Valid Producto producto, @RequestParam MultipartFile imagenFile, RedirectAttributes redirectAttributes) {
-
         productoService.save(producto, imagenFile);
         redirectAttributes.addFlashAttribute("todoOk", messageSource.getMessage("mensaje.actualizado", null, Locale.getDefault()));
-
         return "redirect:/producto/listado";
     }
 
@@ -59,13 +53,13 @@ public class ProductoController {
         try {
             productoService.delete(idProducto);
         } catch (IllegalArgumentException e) {
-            titulo = "error"; // Captura la excepción de argumento inválido para el mensaje de "no existe"
+            titulo = "error";
             detalle = "producto.error01";
         } catch (IllegalStateException e) {
-            titulo = "error"; // Captura la excepción de estado ilegal para el mensaje de "datos asociados"
+            titulo = "error";
             detalle = "producto.error02";
         } catch (Exception e) {
-            titulo = "error";  // Captura cualquier otra excepción inesperada
+            titulo = "error";
             detalle = "producto.error03";
         }
         redirectAttributes.addFlashAttribute(titulo, messageSource.getMessage(detalle, null, Locale.getDefault()));
@@ -80,8 +74,8 @@ public class ProductoController {
             return "redirect:/producto/listado";
         }
         model.addAttribute("producto", productoOpt.get());
-         var categorias = categoriaService.getCategorias(true);
+        var categorias = categoriaService.getCategorias(true);
         model.addAttribute("categorias", categorias);
-        return "/producto/modifica";
+        return "producto/modifica"; // ✅ Corregido: sin barra inicial
     }
 }
